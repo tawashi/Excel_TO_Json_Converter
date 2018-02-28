@@ -158,6 +158,20 @@ class DataSheet
   end
 end
 
+def to_pon(rows)
+  pon = "[\n"
+  rows.each do |id, row|
+    pon += "  #{id.inspect} => [\n"
+    row.each do |k, v|
+      pon += "    #{k.inspect} => #{v.nil? ? "null" : v.inspect},\n"
+    end
+    pon += "  ],\n"
+  end
+  pon += "]"
+end
+
+
+
 class FilterList
   def initialize(filePath)
     if FileTest.exist?(filePath)
@@ -182,16 +196,27 @@ filterList = FilterList.new(filterFilePath)
 Excel.new(filename).each_data_sheets do |sheet|
   begin
     rows = sheet.rows
+    php = baseDir + "/" + sheet.name + ".php"
+    File.open(php, 'w') do |f1|
+      f1.write("<?php\n\nreturn ")
+      f1.write(to_pon(rows))
+      f1.write(";")
+    end
 
-      json = jsonDir + "/" + sheet.name + ".json"
+    `php -l #{php}`
+    if $?.exitstatus != 0
+      raise "php lint failed"
+      continue
+    end
 
-      File.open(json, 'w') do |f2|
+    json = jsonDir + "/" + sheet.name + ".json"
+    File.open(json, 'w') do |f2|
         f2.write(`php scripts/php_json_encode.php #{php}`)
       end
 
-      hash = Digest::MD5.file(json).hexdigest.to_s
-      size = File.size?(json)
-      puts "#{sheet.name} hash:#{hash}"
+    hash = Digest::MD5.file(json).hexdigest.to_s
+    size = File.size?(json)
+    puts "#{sheet.name} hash:#{hash}"
 
     puts "#{sheet.name}: OK"
 
