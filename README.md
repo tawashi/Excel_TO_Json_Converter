@@ -2,7 +2,7 @@
 <b>Turn data on an Excel sheet into a json file</b>
 
 
-Sample : Create frame animations json data straight from an Excel files
+Sample : Create frame animations json data straight from an Excel file
 
 
 Steps:
