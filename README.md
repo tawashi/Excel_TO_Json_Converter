@@ -1,5 +1,5 @@
 # Excel_TO_Json_Converter
-<b>Turn data on an Excel sheet in to a json file</b>
+<b>Turn data on an Excel sheet into a json file</b>
 
 
 Sample : Create frame animations json data straight from an Excel files
